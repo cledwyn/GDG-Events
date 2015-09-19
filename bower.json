@@ -1,0 +1,20 @@
+{
+  "name": "gdgevents",
+  "version": "0.0.0",
+  "authors": [
+    "Lloyd Cledwyn <cledwyn@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase-element": "GoogleWebComponents/firebase-element#~1.0.6",
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.4",
+    "paper-input": "PolymerElements/paper-input#~1.0.14"
+  }
+}
