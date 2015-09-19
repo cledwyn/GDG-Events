@@ -14,7 +14,7 @@ foreach ($obj as $gdg) {
     echo "<h2>".$gdg->meetupurl."</h2>";
     $url = sprintf($meetup_api_events,$gdg->meetup->url,$MEETUP_API_KEY);
     $meetups = file_get_contents($url);
-    echo $meetups;
+    echo '<textarea  cols="80" rows="5"  >'.$meetups.'</textarea>';
     $gdgmeetups = json_decode($meetups);
     if($gdgmeetups->code){
         echo "<h2>$meetups</h2>";
@@ -22,11 +22,15 @@ foreach ($obj as $gdg) {
     } else {
     //    print_r($gdgmeetups);
         foreach ($gdgmeetups->results as $mu) {
+            $endpoint = "chapters/meetup/$gdg->Name/events/$mu->id";
             $event = file_get_contents(sprintf($meetup_api_event,$mu->id,$MEETUP_API_KEY));
-            echo $event;
+            echo "<h4>$mu->id</h4>";
+            echo '<textarea  cols="60" rows="5"  >'.$event.'</textarea>';
+            $fbput = firebasePutItem("test/meetup/events/$mu->id",$event);
+            echo '<br /><textarea  cols="40" rows="3"  >'.$fbput.'</textarea>';
+            
         }
     }
 }
 
 $data = '{"item": "the RAW data string I want to send"}';
-echo firebasePutItem("test/test2",$data);

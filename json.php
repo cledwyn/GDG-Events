@@ -14,8 +14,11 @@ foreach ($obj as $gdg) {
     echo "<h2>".$gdg->meetupurl."</h2>";
     $url = sprintf($meetup_api_events,$gdg->meetup->url,$MEETUP_API_KEY);
     $meetups = file_get_contents($url);
-    echo $meetups;
-    $gdgmeetups = json_decode($meetups);
+    //echo $meetups;
+    // regex necessary because encoding as PHP looses accuacy of long ints
+    // credit http://blog.pixelastic.com/2011/10/12/fix-floating-issue-json-decode-php-5-3/
+    $gdgmeetups = json_decode(preg_replace('/([^\\\])":([0-9]{10,})(,|})/', '$1":"$2"$3', $meetups));
+    print_r($gdgmeetups);
     if($gdgmeetups->code){
         echo "<h2>$meetups</h2>";
         echo "<h3>$url</h3>";

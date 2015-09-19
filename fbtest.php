@@ -3,4 +3,4 @@
   require_once("lib/firebase.php");
 
 $data = '{"item": "the RAW data string I want to send"}';
-echo firebasePutItem("test/test2",$data);
+echo firebasePutItem("test/test3",$data);
