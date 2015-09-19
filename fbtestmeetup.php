@@ -26,6 +26,9 @@ foreach ($obj as $gdg) {
             $event = file_get_contents(sprintf($meetup_api_event,$mu->id,$MEETUP_API_KEY));
             echo "<h4>$mu->id</h4>";
             echo '<textarea  cols="60" rows="5"  >'.$event.'</textarea>';
+
+/// This is failing for some FB JSON FORMAT issue...  :/
+
             $fbput = firebasePutItem("test/meetup/events/$mu->id",$event);
             echo '<br /><textarea  cols="40" rows="3"  >'.$fbput.'</textarea>';
             
