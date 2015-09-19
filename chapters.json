@@ -1,0 +1,37 @@
+{
+    "gdg-tc": {
+        "Location": "Minneapolis, MN",
+        "Name": "GDG Twin Cities",
+        "Organizers": [
+        {
+            "name": "Lloyd Cledwyn",
+            "g+": "LloydCledwyn",
+            "twitter": "cledwyn"
+        },
+        {
+            "name": "Stephen Fluin"
+        }
+        ],
+        "meetup-url": "gdg-tc"
+    },
+        "gdgsv": {
+        "Location": "Mountain View, CA",
+        "Name": "GDG Silicon Valley",
+        "Organizers": [
+        {
+            "name": "Peter"
+        },
+        {
+            "name": "Rita"
+        },
+        {
+            "name": "Martin Omander"
+        },
+        {
+            "name": "Kevin Nilson"
+        }
+        ],
+        "meetup-url": "gdg-tc"
+    }
+
+}

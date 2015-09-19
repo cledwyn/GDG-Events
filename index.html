@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>GDG Events</title>
+    <meta name="description" content="">
+
+    <!-- Mobile -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <!-- Chrome / Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="black">
+    <link rel="icon" href="icon.png">
+
+    <!-- Safari / iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
+
+    <!-- Web Components -->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+    <link rel="import" href="bower_components/paper-input/paper-input.html">
+    <link rel="import" href="bower_components/firebase-element/firebase-collection.html">
+
+</head>
+<body unresolved>
+    
+  <template is="dom-bind">
+    <firebase-collection
+      order-by-child="Name"
+      limit-to-first="3"
+      location="https://gdgevents.firebaseio.com/chapters"
+      data="{{gdgs}}"></firebase-collection>
+    <template is="dom-repeat" items="[[gdgs]]" as="gdgs">
+      <h3>[[gdgs.Name]]</h3>
+      <template is="dom-repeat" items="[[gdgs.Organizers]]" as="orgs">
+        <a href="#">[[orgs.name]]</a>
+      </template>
+    </template>
+  </template>
+
+
+</body>
+</html>
