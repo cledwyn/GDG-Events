@@ -31,7 +31,6 @@
   <template is="dom-bind">
     <firebase-collection
       order-by-child="Name"
-      limit-to-first="3"
       location="https://gdgevents.firebaseio.com/chapters"
       data="{{gdgs}}"></firebase-collection>
     <template is="dom-repeat" items="[[gdgs]]" as="gdgs">
