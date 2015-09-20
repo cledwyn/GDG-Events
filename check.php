@@ -1,4 +1,5 @@
 <?php
+echo 'starting<br/>';
   require_once("settings.php");
   require_once("lib/firebase.php");
 
@@ -20,8 +21,8 @@ $obj = json_decode($json);
 $meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_id=%s&page=200&key=%s";
 
 foreach ($obj as $gdgname => $gdg) {
-    echo "\n\n<h2>".$gdg->Name."</h2>";
-    echo "<h2>".$gdg->meetupurl."</h2>";
+    echo "\n\n<h2>".$gdg->name."</h2>";
+    echo "<h2>".$gdg->meetup->url."</h2>";
     $url = sprintf($meetup_api_events,$gdg->meetup->id,$MEETUP_API_KEY);
     $meetups = file_get_contents($url);
     //echo $meetups;

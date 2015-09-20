@@ -23,24 +23,51 @@
     <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
     <link rel="import" href="bower_components/paper-input/paper-input.html">
+    <link rel="import" href="bower_components/paper-button/paper-button.html">
     <link rel="import" href="bower_components/firebase-element/firebase-collection.html">
+
 
 </head>
 <body unresolved>
+
+<paper-input label="New GDG Meetup URL name (NYC-GDG)" error-message="whazzat now?"></paper-input>
+<paper-button raised id="addGDG">add</paper-button>
+  <div id="greeting"></div>
     
   <template is="dom-bind">
     <firebase-collection
-      order-by-child="Name"
+      id="firebase-chapters"
+      order-by-child="name"
       location="https://gdgevents.firebaseio.com/chapters"
       data="{{gdgs}}"></firebase-collection>
     <template is="dom-repeat" items="[[gdgs]]" as="gdgs">
-      <h3>[[gdgs.Name]]</h3>
+      <h3>[[gdgs.name]]</h3>
       <template is="dom-repeat" items="[[gdgs.Organizers]]" as="orgs">
         <a href="#">[[orgs.name]]</a>
       </template>
     </template>
   </template>
 
+<div id="loginbutton" class="button google" onclick="login();">    <button>Login with G+</button></div>
+<input id="logoutbutton" type="button" value="logout" onclick="logout();">
 
+
+<script>
+      // To ensure that elements are ready on polyfilled browsers, 
+      // wait for WebComponentsReady. 
+      document.addEventListener('WebComponentsReady', function() {
+        var input = document.querySelector('paper-input');
+        var button = document.getElementById('addGDG');
+        var greeting = document.getElementById("greeting");
+        var fbchapters = document.getElementById("firebase-chapters");
+        button.addEventListener('click', function() {
+          greeting.textContent = 'Hello, ' + input.value;
+          addNewGDG(input.value);
+        });
+      });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
