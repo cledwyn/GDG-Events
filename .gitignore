@@ -7,3 +7,5 @@ bower_components/
 css/reveal.min.css
 js/reveal.min.js
 settings.php
+.subl*
+backups/
