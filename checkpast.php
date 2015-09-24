@@ -17,13 +17,13 @@ $json = file_get_contents('https://gdgevents.firebaseio.com/chapters.json');
 $obj = json_decode($json);
 // print_r($obj);
 
-$meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_urlname=%s&status=past&page=200&key=%s";
+$meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_id=%s&status=past&page=3&desc=true&key=%s";
 $meetup_api_event = "https://api.meetup.com/2/event/%s?&sign=true&photo-host=public&key=%s";
 
-foreach ($obj as $gdg) {
-    echo "\n\n<h2>".$gdg->Name."</h2>";
-    echo "<h2>".$gdg->meetupurl."</h2>";
-    $url = sprintf($meetup_api_events,$gdg->meetup->url,$MEETUP_API_KEY);
+foreach ($obj as $gdgname => $gdg) {
+    echo "\n\n<h2>".$gdg->name."</h2>";
+    echo "<h2>".$gdg->meetup->url."</h2>";
+    $url = sprintf($meetup_api_events,$gdg->meetup->id,$MEETUP_API_KEY);
     $meetups = file_get_contents($url);
     //echo $meetups;
     // regex necessary because encoding as PHP looses accuacy of long ints
@@ -40,8 +40,8 @@ foreach ($obj as $gdg) {
             //print_r($data);
             $endpoint = "/events/meetup/".$gdg->meetup->url."/".$mu->id;
             $ans = $firebase->set($endpoint, $data);
-            // $endpoint = "/chapters/".$gdg->meetup->url."/meetup/events/".$mu->id;
-            // $ans = $firebase->set($endpoint, $data);
+            $endpoint = urlencode("/chapters/".$gdgname."/meetup/events/".$mu->id);
+            $ans = $firebase->set($endpoint, $data);
             //echo $ans;
         }
     }

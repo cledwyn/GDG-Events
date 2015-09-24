@@ -17,6 +17,8 @@ if (authData) {
 function showLogin(tf){
     document.getElementById('loginbutton').style.display = tf == true ? 'block' : 'none';
     document.getElementById('logoutbutton').style.display = tf == true ? 'none' : 'block';
+    document.getElementById('newGdgInput').style.display = tf == true ? 'none' : 'block';
+    document.getElementById('addGDG').style.display = tf == true ? 'none' : 'block';
 //    document.getElementById('shwrapper').style.display = tf == true ? 'none' : 'block';
 }
 
@@ -56,6 +58,7 @@ function authHandler(error, authData) {
 }
 
 function addNewGDG(newGDG){
+        var greeting = document.getElementById("greeting");
 
   // Check Chapter
   $.get( firebaseBaseUrl+"/chapters/"+newGDG+".json" )
@@ -63,7 +66,9 @@ function addNewGDG(newGDG){
       if(data == null){  // chapter is not already loaded, make a new request
         $.get("lib/getNewGroup.php",{meetup: newGDG})
         .done(function(data){
-          if (data == "success"){
+          if (data.success == true){
+            greeting.textContent =  data.data.meetup.name + ' added, meetup id: ' + data.data.meetup.id;
+
             //
           } else{
             alert(data);

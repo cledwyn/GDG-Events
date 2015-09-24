@@ -29,10 +29,19 @@
 
 </head>
 <body unresolved>
-
-<paper-input label="New GDG Meetup URL name (NYC-GDG)" error-message="whazzat now?"></paper-input>
+<div style="clear:both">
+<div style="width:80%; float: left">
+<paper-input label="New GDG Meetup URL name (NYC-GDG)" error-message="whazzat now?" id="newGdgInput"></paper-input>
+</div>
+<div style="width:18%; float:left">
 <paper-button raised id="addGDG">add</paper-button>
-  <div id="greeting"></div>
+</div>
+    
+</div>
+  <div id="greeting" style="clear:both"></div>
+
+<div id="loginbutton" class="button google" onclick="login();">    <button>Login with G+</button></div>
+
     
   <template is="dom-bind">
     <firebase-collection
@@ -48,8 +57,21 @@
     </template>
   </template>
 
-<div id="loginbutton" class="button google" onclick="login();">    <button>Login with G+</button></div>
+  <template is="dom-bind">
+    <ul>
+    <firebase-collection
+      id="firebase-chapters"
+      order-by-child="time"
+      location="https://gdgevents.firebaseio.com/events/meetup"
+      data="{{events}}"></firebase-collection>
+    <template is="dom-repeat" items="[[events]]" as="event">
+        <li><span>[[event.name]]</span> - <span>[[event.group.name]]</span></li>
+    </template>
+    </ul>
+  </template>
+
 <input id="logoutbutton" type="button" value="logout" onclick="logout();">
+
 
 
 <script>
@@ -61,7 +83,6 @@
         var greeting = document.getElementById("greeting");
         var fbchapters = document.getElementById("firebase-chapters");
         button.addEventListener('click', function() {
-          greeting.textContent = 'Hello, ' + input.value;
           addNewGDG(input.value);
         });
       });

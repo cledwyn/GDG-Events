@@ -1,5 +1,7 @@
 <?php
-    require_once("../settings.php");
+header('Content-Type: application/json');
+
+    require_once("../settings.php");    
     require_once("../lib/firebase.php");
 
     require_once('../lib/firebaseInterface.php');
@@ -26,9 +28,11 @@
     // credit http://blog.pixelastic.com/2011/10/12/fix-floating-issue-json-decode-php-5-3/
     $gdgmeetup = json_decode(preg_replace('/([^\\\])":([0-9]{10,})(,|})/', '$1":"$2"$3', $meetups));
     //print_r($gdgmeetups);
-    if($gdgmeetup->code){  // Check for meetup API Error
-        echo "<h2>$meetups</h2>";
-        echo "<h3>$url</h3>";
+    $ansArray = array('success' => true);
+    if($gdgmeetup->errors){  // Check for meetup API Error
+        $ansArray['success'] = false;   
+        $ansArray['response'] = $gdgmeetup;
+        $ansArray['url']=$url;
     } else {
         $data = array(
                 'name' => $gdgmeetup->name,
@@ -36,5 +40,7 @@
             );
         $endpoint = urlencode("/chapters/".$newmeetup);
         $ans = $firebase->set($endpoint, $data);
-        echo 'success';
+        $ansArray['data'] = $data;
     }
+
+    echo json_encode($ansArray);

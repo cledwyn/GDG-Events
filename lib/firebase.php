@@ -46,3 +46,39 @@ function firebasePutItem($endpoint,$body){
 
     return $output;
 }
+
+function firebasePutItemSocket($firebase_appid, $firebase_authkey, $endpoint, $data){
+    # working vars 
+    $service = sprintf("%s.firebaseio.com",$firebase_appid); 
+    $service_uri = "/%s.json?auth=%s";
+    $service_endpoint = sprintf($service_uri,$endpoint,$firebase_authkey);
+
+    $ans = "";
+
+    $fp = fsockopen("ssl://".$service, 443, $errno, $errstr); 
+    if (!$fp) { 
+       echo "$errstr ($errno)<br/>\n"; 
+       echo $fp; 
+    } else { 
+        $header = "Content-Type: application/json\r\n"; 
+        $header .= "Host: $firebase_appid.firebaseio.com\r\n";
+        $header .= "Content-Length: ".strlen($data)."\r\n"; 
+        $header .= "Connection: close\r\n";
+        $header .= "\r\n"; 
+//        echo $header; 
+
+
+
+        fputs($fp, "PUT $service_endpoint  HTTP/1.0\r\n"); 
+        $ans .= $data."\r\n";
+        fputs($fp, $header.$data); 
+        fwrite($fp, $out); 
+        while (!feof($fp)) { 
+            $ans .= fgets($fp, 128); 
+        } 
+       fclose($fp); 
+    } 
+
+    return $ans;
+
+}

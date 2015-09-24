@@ -18,29 +18,22 @@ const DEFAULT_PATH = '/chapters';
 $firebase = new \Firebase\FirebaseLib($DEFAULT_URL, $FIREBASE_AUTH_KEY);
 
 
-$json = file_get_contents('https://gdgevents.firebaseio.com/chapters.json?orderBy="updated"&limitToFirst=10');
-$obj = json_decode($json);
-// print_r($obj);
+$gdgurl = $_GET["url"];
 
-$meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_id=%s&page=200&time=-14d,2m&status=upcoming,past&key=%s";
+$meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_urlname=%s&page=200&key=%s";
 
-foreach ($obj as $gdgname => $gdg) {
-    echo "\n\n<h2>".$gdg->name.$gdg->meetup->url."</h2>";
     echo $timer->sofar()."\r\n";
     $timer2 = new timer();
     $timer2->start();
-    $url = sprintf($meetup_api_events,$gdg->meetup->id,$MEETUP_API_KEY);
+    $url = sprintf($meetup_api_events,$gdgurl,$MEETUP_API_KEY);
     $meetups = file_get_contents($url);
-//    var_dump($http_response_header);
-    foreach ($http_response_header as $s) {
-        if (substr($s, 0,strlen("X-RateLimit-")) == "X-RateLimit-"){
-            echo $s."\r\n";
-        }
-    }
-    //echo $meetups;
+    var_dump($http_response_header);
+    //print_r($meetups);
+    //echo $meetups."\r\n";
     // regex necessary because encoding as PHP looses accuacy of long ints
     // credit http://blog.pixelastic.com/2011/10/12/fix-floating-issue-json-decode-php-5-3/
     $gdgmeetups = json_decode(preg_replace('/([^\\\])":([0-9]{10,})(,|})/', '$1":"$2"$3', $meetups));
+    echo "\n\n<h2>".$gdg->name.$gdg->meetup->url."</h2>";
     //print_r($gdgmeetups);
     if($gdgmeetups->code){
         echo "<h2>$meetups</h2>";
@@ -48,27 +41,29 @@ foreach ($obj as $gdgname => $gdg) {
     } else {
     //    print_r($gdgmeetups);
         foreach ($gdgmeetups->results as $mu) {
-            // need to check for mutated event id see https://goo.gl/v6XEpG
+
             $eventid = $mu->id;
+            echo "eventid: $eventid \r\n";
+            // need to check for mutated event id see https://goo.gl/v6XEpG
             $eventurlid = explode("/", $mu->event_url)[5];
-            //echo "eventURLid: $eventurlid \r\n";
+            echo "eventURLid: $eventurlid \r\n";
             if ($eventid != $eventurlid){ $eventid = $eventurlid; }
-            //echo "eventid: $eventid \r\n";
-            //
-            $data = (array) $mu; //print_r($data);
+            echo "eventid: $eventid \r\n";
+            $data = (array) $mu;
+            print_r($data);
             $endpoint = "/events/meetup/".$eventid;
+            echo "enpoint: $endpoint \r\n";
             $ans = $firebase->set($endpoint, $data);
-            // per https://www.firebase.com/docs/rest/guide/structuring-data.html 
-            // it is better to double reference and try and normalize the data
-            $endpoint = urlencode("/chapters/".$gdgname."/meetup/events/".$eventid);
-            $ans = $firebase->set($endpoint, true);
-            //echo $ans;
+            echo "set ans (line57): $ans \r\n";
+
+            $endpoint = urlencode("/chapters/".$gdgurl."/meetup/events/".$eventid);
+            $ans = $firebase->set($endpoint, $data);
+            echo $ans;
         }
     }
-    $endpoint = "/chapters/$gdgname/updated";
-    echo "$endpoint"."\r\n";
+    $endpoint = "/chapters/$gdgurl/updated";
+    echo "$endpoint";
     $ans = $firebase->set($endpoint,time());
+    echo "overall: ".$timer->sofar()."\r\n";
     $timer2->stop();
     echo "individual: ".$timer2->result()."\r\n";
-    echo "overall: ".$timer->sofar()."\r\n";
-}
