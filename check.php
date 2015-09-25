@@ -11,11 +11,11 @@ require_once('lib/firebaseStub.php');
 $timer = new timer();
 $timer->start();
 
-$DEFAULT_URL = "https://$FIREBASE_APP_ID.firebaseio.com/";
+$FIREBASE_BASE_URL = "https://$FIREBASE_APP_ID.firebaseio.com/";
 
 const DEFAULT_PATH = '/chapters';
 
-$firebase = new \Firebase\FirebaseLib($DEFAULT_URL, $FIREBASE_AUTH_KEY);
+$firebase = new \Firebase\FirebaseLib($FIREBASE_BASE_URL, $FIREBASE_AUTH_KEY);
 
 
 $json = file_get_contents('https://gdgevents.firebaseio.com/chapters.json?orderBy="updated"&limitToFirst=10');
@@ -55,8 +55,22 @@ foreach ($obj as $gdgname => $gdg) {
             if ($eventid != $eventurlid){ $eventid = $eventurlid; }
             //echo "eventid: $eventid \r\n";
             //
-            $data = (array) $mu; //print_r($data);
-            $endpoint = "/events/meetup/".$eventid;
+            $data = (array) $mu; //print_r($data);            
+            $endpoint = "/events/meetup/".$eventid;         
+            // get existing element so we do not destroy additional data elements that may have been added
+            $orignal_object = array();
+            $meetup_firebase_url = $FIREBASE_BASE_URL."/events/meetup/".$eventid.".json";
+            $meetup_firebase = file_get_contents($meetup_firebase_url);
+            try {
+                $orignal_object = json_decode(preg_replace('/([^\\\])":([0-9]{10,})(,|})/', '$1":"$2"$3',$meetup_firebase));
+                $orignal_object = (array) $orignal_object;
+                //echo "------------original FB Object--------------\r\n";                    
+                //var_dump($orignal_object);
+            } catch (Exception $e) { echo $e->getMessage();  }
+            //echo "------------original--------------\r\n";
+            //print_r($orignal_object);
+            $data = upsertArray($orignal_object,$data);
+            // persist the data to Firebase
             $ans = $firebase->set($endpoint, $data);
             // per https://www.firebase.com/docs/rest/guide/structuring-data.html 
             // it is better to double reference and try and normalize the data

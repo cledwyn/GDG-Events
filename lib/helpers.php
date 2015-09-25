@@ -54,3 +54,17 @@ class timer
     }
 
 }
+
+function upsertArray($original_array,$new_array){
+    echo "--------------------------\r\n";
+    echo "------------IN upsertArray--------------\r\n";
+    echo "------------original--------------\r\n";
+    print_r($original_array);
+    echo "------------new_array--------------\r\n";
+    print_r($new_array);
+
+    foreach ($new_array as $key => $value) {
+        $original_array[$key] = $value;
+    }
+    return $original_array;
+}

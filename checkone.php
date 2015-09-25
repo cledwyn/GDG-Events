@@ -11,11 +11,11 @@ require_once('lib/firebaseStub.php');
 $timer = new timer();
 $timer->start();
 
-$DEFAULT_URL = "https://$FIREBASE_APP_ID.firebaseio.com/";
+$FIREBASE_BASE_URL = "https://$FIREBASE_APP_ID.firebaseio.com/";
 
 const DEFAULT_PATH = '/chapters';
 
-$firebase = new \Firebase\FirebaseLib($DEFAULT_URL, $FIREBASE_AUTH_KEY);
+$firebase = new \Firebase\FirebaseLib($FIREBASE_BASE_URL, $FIREBASE_AUTH_KEY);
 
 
 $gdgurl = $_GET["url"];
@@ -40,18 +40,33 @@ $meetup_api_events = "https://api.meetup.com/2/events?&sign=true&photo-host=publ
         echo "<h3>$url</h3>";
     } else {
     //    print_r($gdgmeetups);
-        foreach ($gdgmeetups->results as $mu) {
+        foreach ($gdgmeetups->results as $meetup) {
 
-            $eventid = $mu->id;
+            $eventid = $meetup->id;
             echo "eventid: $eventid \r\n";
             // need to check for mutated event id see https://goo.gl/v6XEpG
-            $eventurlid = explode("/", $mu->event_url)[5];
+            $eventurlid = explode("/", $meetup->event_url)[5];
             echo "eventURLid: $eventurlid \r\n";
             if ($eventid != $eventurlid){ $eventid = $eventurlid; }
             echo "eventid: $eventid \r\n";
-            $data = (array) $mu;
+            $data = (array) $meetup;
             print_r($data);
             $endpoint = "/events/meetup/".$eventid;
+
+            // get existing element so we do not destroy additional data elements that may have been added
+            $orignal_object = array();
+            $meetup_firebase_url = $FIREBASE_BASE_URL."/events/meetup/".$eventid.".json";
+            $meetup_firebase = file_get_contents($meetup_firebase_url);
+            try {
+                $orignal_object = json_decode(preg_replace('/([^\\\])":([0-9]{10,})(,|})/', '$1":"$2"$3',$meetup_firebase));
+                echo "------------original FB Object--------------\r\n";                    
+                var_dump($orignal_object);
+            } catch (Exception $e) { echo $e->getMessage();  }
+            echo "------------original--------------\r\n";
+            print_r($orignal_object);
+            $data = upsertArray($orignal_object,$data);
+            echo "------------updated--------------\r\n";
+            print_r($data);
             echo "enpoint: $endpoint \r\n";
             $ans = $firebase->set($endpoint, $data);
             echo "set ans (line57): $ans \r\n";
